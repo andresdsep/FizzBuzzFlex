@@ -36,4 +36,15 @@ public class GamesController : ControllerBase
 
         return Ok(game.ToReadDto());
     }
+
+    [HttpPost]
+    public async Task<ActionResult<GameReadDto>> Create(GameWriteDto dto)
+    {
+        var game = dto.ToEntity();
+
+        _context.Games.Add(game);
+        await _context.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(GetById), new { id = game.Id }, game.ToReadDto());
+    }
 }

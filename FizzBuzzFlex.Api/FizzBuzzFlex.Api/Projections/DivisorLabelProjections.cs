@@ -10,6 +10,16 @@ public static class DivisorLabelProjections
         Id = label.Id,
         Divisor = label.Divisor,
         Label = label.Label,
-        Order = label.Order,
     };
+
+    public static DivisorLabel ToEntity(this DivisorLabelWriteDto l, int order)
+    {
+        return new DivisorLabel
+        {
+            Id = l.Id,
+            Divisor = l.Divisor,
+            Label = l.Label,
+            Order = order,
+        };
+    }
 }

@@ -1,6 +1,6 @@
 namespace FizzBuzzFlex.Api.Dtos;
 
-public class DivisorLabelReadDto
+public class DivisorLabelWriteDto
 {
     public Guid Id { get; set; }
 

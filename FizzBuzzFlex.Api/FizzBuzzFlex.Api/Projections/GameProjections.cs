@@ -19,6 +19,15 @@ public static class GameProjections
         Name = game.Name,
         Author = game.Author,
         CreatedDate = game.CreatedDate,
-        DivisorLabels = [.. game.DivisorLabels.Select(DivisorLabelProjections.ToReadDto)],
+        DivisorLabels = [.. game.DivisorLabels.OrderBy(l => l.Order).Select(DivisorLabelProjections.ToReadDto)],
+    };
+
+    public static Game ToEntity(this GameWriteDto dto) => new()
+    {
+        Id = dto.Id,
+        Name = dto.Name,
+        Author = dto.Author,
+        CreatedDate = DateTime.Now,
+        DivisorLabels = [.. dto.DivisorLabels.Select((l, i) => l.ToEntity(i))],
     };
 }
