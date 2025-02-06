@@ -8,7 +8,7 @@ Add a migration with:
 dotnet ef migrations add <MigrationName> -s ../FizzBuzzFlex.Api
 ```
 
-Run a migration against the database with:
+Run outstanding migrations against the database with:
 
 ```
 dotnet ef database update -s ../FizzBuzzFlex.Api
