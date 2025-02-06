@@ -10,3 +10,10 @@ export interface DivisorLabelWriteDto {
   divisor: number;
   label: string;
 }
+
+export interface GameMinimalDto {
+  id: string;
+  name: string;
+  author: string;
+  createdDate: Date;
+}

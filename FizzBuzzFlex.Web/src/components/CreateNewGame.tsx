@@ -1,9 +1,9 @@
-import { FormEvent, useState } from 'react';
-import TextField from './TextField';
-import { GameWriteDto } from '../models/dtos';
+import { FormEvent, Fragment, useState } from 'react';
+import { useMutation, useQueryClient } from 'react-query';
 import { v4 as uuid } from 'uuid';
-import { useMutation } from 'react-query';
-import { createNewGame } from '../utils/apiHelpers';
+import { GameWriteDto } from '../models/dtos';
+import { createNewGame, GetAllGamesKey } from '../utils/apiHelpers';
+import TextField from './TextField';
 
 const getInitialModel = (): GameWriteDto => ({
   id: uuid(),
@@ -18,8 +18,11 @@ const getInitialModel = (): GameWriteDto => ({
 
 const CreateNewGame = () => {
   const [gameModel, setGameModel] = useState(getInitialModel);
+  const queryClient = useQueryClient();
 
-  const { mutate, isLoading } = useMutation(createNewGame);
+  const { mutate, isLoading } = useMutation(createNewGame, {
+    onSuccess: () => queryClient.invalidateQueries(GetAllGamesKey),
+  });
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     mutate(gameModel);
@@ -43,8 +46,8 @@ const CreateNewGame = () => {
           model={gameModel}
           setModel={setGameModel}
         />
-        {gameModel.divisorLabels.map((_, i) => (
-          <>
+        {gameModel.divisorLabels.map((dl, i) => (
+          <Fragment key={dl.id}>
             <TextField
               name={`divisorLabels[${i}].divisor`}
               label={`Divisor ${i + 1}`}
@@ -57,7 +60,7 @@ const CreateNewGame = () => {
               model={gameModel}
               setModel={setGameModel}
             />
-          </>
+          </Fragment>
         ))}
 
         <button>Create Game</button>

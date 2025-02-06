@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace FizzBuzzFlex.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("v1/[controller]")]
 public class GamesController : ControllerBase
 {
     private readonly DatabaseContext _context;

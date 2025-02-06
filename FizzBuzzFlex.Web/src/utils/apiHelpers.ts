@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { GameWriteDto } from '../models/dtos';
+import { GameMinimalDto, GameWriteDto } from '../models/dtos';
+import { getReactQueryConfig } from './getReactQueryConfig';
 
 const axiosClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -7,5 +8,14 @@ const axiosClient = axios.create({
 });
 
 export const createNewGame = async (game: GameWriteDto) => {
-  await axiosClient.post('/games', game);
+  await axiosClient.post('/v1/games', game);
 };
+
+export const GetAllGamesKey = 'getAllGames';
+export const getAllGames = getReactQueryConfig(
+  () => async () => {
+    const response = await axiosClient.get<GameMinimalDto[]>('/v1/games/all');
+    return response.data;
+  },
+  GetAllGamesKey
+);
