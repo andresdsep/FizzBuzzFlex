@@ -34,7 +34,7 @@ public class GamesController : ControllerBase
             return NotFound();
         }
 
-        return Ok(game.ToReadDto());
+        return game.ToReadDto();
     }
 
     [HttpPost]

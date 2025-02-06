@@ -10,9 +10,9 @@ public class DatabaseContext : DbContext
     {
     }
 
-    public required DbSet<Game> Games { get; set; }
+    public DbSet<Game> Games => Set<Game>();
 
-    public required DbSet<Match> Matches { get; set; }
+    public DbSet<Match> Matches => Set<Match>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
