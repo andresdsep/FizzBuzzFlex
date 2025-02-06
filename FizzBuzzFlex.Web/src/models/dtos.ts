@@ -7,6 +7,6 @@ export interface GameWriteDto {
 
 export interface DivisorLabelWriteDto {
   id: string;
-  divisor: string;
+  divisor: number;
   label: string;
 }
