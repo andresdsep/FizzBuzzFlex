@@ -1,4 +1,4 @@
-* FizzBuzzFlex DB *
+# FizzBuzzFlex DB
 
 Database has been built with EF code first migrations.
 
