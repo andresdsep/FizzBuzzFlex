@@ -7,4 +7,8 @@ public class MatchWriteDto
     public Guid GameId { get; set; }
 
     public int DurationInSeconds { get; set; }
+
+    public int MinimumNumber { get; set; }
+
+    public int MaximumNumber { get; set; }
 }

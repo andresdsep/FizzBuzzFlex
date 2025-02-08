@@ -13,6 +13,10 @@ public class Match
 
     public int DurationInSeconds { get; set; }
 
+    public int MinimumNumber { get; set; }
+
+    public int MaximumNumber { get; set; }
+
     public DateTime CreatedDate { get; set; }
 
     public List<Prompt> Prompts { get; set; } = [];

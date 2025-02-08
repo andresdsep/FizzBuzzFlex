@@ -10,5 +10,7 @@ public static class MatchProjections
         Id = m.Id,
         GameId = m.GameId,
         DurationInSeconds = m.DurationInSeconds,
+        MinimumNumber = m.MinimumNumber,
+        MaximumNumber = m.MaximumNumber,
     };
 }

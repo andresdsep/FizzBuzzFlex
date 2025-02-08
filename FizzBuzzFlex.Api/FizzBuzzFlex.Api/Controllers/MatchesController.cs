@@ -26,7 +26,7 @@ public class MatchesController : ControllerBase
         await _context.Matches.AddAsync(newMatch);
         await _context.SaveChangesAsync();
 
-        var prompt = await _matchService.GetMatchPrompt(newMatch);
+        var prompt = await _matchService.GetMatchPrompt(newMatch, false);
         return prompt;
     }
 }

@@ -5,5 +5,5 @@ namespace FizzBuzzFlex.Api.Services;
 
 public interface IMatchService
 {
-    Task<RoundResponse> GetMatchPrompt(Match match);
+    Task<RoundResponse> GetMatchPrompt(Match match, bool previousRoundResult);
 }

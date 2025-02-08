@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using FizzBuzzFlex.Api.Services;
 using FizzBuzzFlex.EF.Context;
 using FizzBuzzFlex.EF.Entities;
@@ -21,16 +22,47 @@ public class MatchServiceTests
     {
         var match = await SetUpGameAndMatch();
 
-        var prompt = await _service.GetMatchPrompt(match);
-
+        var prompt = await _service.GetMatchPrompt(match, false);
         Assert.NotNull(prompt);
 
-        var matchInContext = await _context.Matches.Include(m => m.Prompts).FirstOrDefaultAsync(m => m.Id == match.Id);
+        var matchInContext = await _context.Matches.Include(m => m.Prompts)
+            .FirstOrDefaultAsync(m => m.Id == match.Id);
         Assert.NotNull(matchInContext);
         Assert.Single(matchInContext.Prompts);
     }
 
-    private async Task<Match> SetUpGameAndMatch()
+    [Fact]
+    public async Task ShouldCreateFollowUpPromptForMatch()
+    {
+        var match = await SetUpGameAndMatch(1);
+
+        var prompt = await _service.GetMatchPrompt(match, true);
+        Assert.NotNull(prompt);
+
+        var matchInContext = await _context.Matches.Include(m => m.Prompts)
+            .FirstOrDefaultAsync(m => m.Id == match.Id);
+        Assert.NotNull(matchInContext);
+        Assert.Equal(2, matchInContext.Prompts.Count);
+    }
+
+    [Fact]
+    public async Task ShouldNotReturnDuplicateNumbersForMatch()
+    {
+        var match = await SetUpGameAndMatch(3, 1, 4);
+
+        var prompt = await _service.GetMatchPrompt(match, true);
+        Assert.NotNull(prompt);
+
+        var matchInContext = await _context.Matches.Include(m => m.Prompts)
+            .FirstOrDefaultAsync(m => m.Id == match.Id);
+        Assert.NotNull(matchInContext);
+        Assert.Equal(4, matchInContext.Prompts.Count);
+
+        var promptNumbers = matchInContext.Prompts.Select(p => p.Number).ToList();
+        Assert.Equal(4, promptNumbers.Last());
+    }
+
+    private async Task<Match> SetUpGameAndMatch(int numberOfPrompts = 0, int minimumNumber = 1, int maximumNumber = 100)
     {
         var game = new Game
         {
@@ -43,10 +75,26 @@ public class MatchServiceTests
             Id = Guid.NewGuid(),
             GameId = game.Id,
             DurationInSeconds = 60,
+            MinimumNumber = minimumNumber,
+            MaximumNumber = maximumNumber,
         };
+
+        for (int i = 1; i <= numberOfPrompts; i++)
+        {
+            var prompt = new Prompt
+            {
+                Id = Guid.NewGuid(),
+                MatchId = match.Id,
+                Number = i,
+                IsCorrect = true,
+            };
+            match.Prompts.Add(prompt);
+        }
+
         _context.Games.Add(game);
         _context.Matches.Add(match);
         await _context.SaveChangesAsync();
+
         return match;
     }
 }
