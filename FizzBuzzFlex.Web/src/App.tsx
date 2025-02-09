@@ -1,14 +1,16 @@
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
-import CreateNewGame from './components/CreateNewGame';
-import GameList from './components/GameList';
+import HomePage from './pages/HomePage';
+import PlayPage from './pages/PlayPage';
 
 function App() {
   return (
-    <>
-      <h1>FizzBuzzFlex</h1>
-      <CreateNewGame />
-      <GameList />
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/play/:gameId" element={<PlayPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

@@ -1,5 +1,6 @@
 import { format } from 'date-fns';
 import { useQuery } from 'react-query';
+import { Link } from 'react-router-dom';
 import { getAllGames } from '../utils/apiHelpers';
 
 const GameList = () => {
@@ -15,6 +16,7 @@ const GameList = () => {
             <th>Name</th>
             <th>Author</th>
             <th>Date</th>
+            <th />
           </tr>
         </thead>
         <tbody>
@@ -23,6 +25,9 @@ const GameList = () => {
               <td>{game.name}</td>
               <td>{game.author}</td>
               <td>{format(game.createdDate, 'dd MMM yyyy')}</td>
+              <td>
+                <Link to={`/play/${game.id}`}>Play!</Link>
+              </td>
             </tr>
           ))}
         </tbody>
