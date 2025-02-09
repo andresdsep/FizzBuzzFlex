@@ -68,7 +68,7 @@ public class MatchServiceTests
     public async Task ShouldCheckFizzBuzzAnswer()
     {
         var match = await SetUpGameAndMatch([15]);
-        var roundAnswer = new RoundAnswer
+        var roundAnswer = new RoundAnswerDto
         {
             MatchId = match.Id,
             PromptId = match.Prompts.First().Id,
@@ -83,7 +83,7 @@ public class MatchServiceTests
     public async Task ShouldCheckBuzzAnswer()
     {
         var match = await SetUpGameAndMatch([20]);
-        var roundAnswer = new RoundAnswer
+        var roundAnswer = new RoundAnswerDto
         {
             MatchId = match.Id,
             PromptId = match.Prompts.First().Id,
@@ -98,7 +98,7 @@ public class MatchServiceTests
     public async Task ShouldCheckNumberAnswer()
     {
         var match = await SetUpGameAndMatch([22]);
-        var roundAnswer = new RoundAnswer
+        var roundAnswer = new RoundAnswerDto
         {
             MatchId = match.Id,
             PromptId = match.Prompts.First().Id,
@@ -113,7 +113,7 @@ public class MatchServiceTests
     public async Task ShouldFailWrongAnswer()
     {
         var match = await SetUpGameAndMatch([25]);
-        var roundAnswer = new RoundAnswer
+        var roundAnswer = new RoundAnswerDto
         {
             MatchId = match.Id,
             PromptId = match.Prompts.First().Id,

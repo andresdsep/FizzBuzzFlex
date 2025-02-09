@@ -15,7 +15,7 @@ public class MatchService : IMatchService
         _context = context;
     }
 
-    public async Task<RoundResponse> StartMatch(MatchWriteDto matchWriteDto)
+    public async Task<RoundResponseDto> StartMatch(MatchWriteDto matchWriteDto)
     {
         var newMatch = matchWriteDto.ToEntity();
         await _context.Matches.AddAsync(newMatch);
@@ -24,7 +24,7 @@ public class MatchService : IMatchService
         return await GetMatchPrompt(newMatch, false);
     }
 
-    public async Task<RoundResponse> CheckMatchPrompt(RoundAnswer roundAnswer)
+    public async Task<RoundResponseDto> CheckMatchPrompt(RoundAnswerDto roundAnswer)
     {
         var match = await _context.Matches
             .AsSplitQuery()
@@ -50,11 +50,11 @@ public class MatchService : IMatchService
         if (correctAnswer == string.Empty)
             correctAnswer = prompt.Number.ToString();
 
-        var isCorrect = correctAnswer == roundAnswer.Answer;
+        var isCorrect = string.Equals(correctAnswer, roundAnswer.Answer, StringComparison.OrdinalIgnoreCase);
         return await GetMatchPrompt(match, isCorrect);
     }
 
-    public async Task<RoundResponse> GetMatchPrompt(Match match, bool previousRoundResult)
+    public async Task<RoundResponseDto> GetMatchPrompt(Match match, bool previousRoundResult)
     {
         var usedNumbers = match.Prompts.Select(p => p.Number).ToList();
 
@@ -73,7 +73,7 @@ public class MatchService : IMatchService
         match.Prompts.Add(newPrompt);
         await _context.SaveChangesAsync();
 
-        return new RoundResponse
+        return new RoundResponseDto
         {
             RoundNumber = match.Prompts.Count,
             PreviousRoundResult = previousRoundResult,

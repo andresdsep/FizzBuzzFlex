@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { GameMinimalDto, GameWriteDto } from '../models/dtos';
+import { GameMinimalDto, GameReadDto, GameWriteDto } from '../models/gameDtos';
+import { MatchWriteDto, RoundResponseDto } from '../models/matchDtos';
 import { getReactQueryConfig } from './getReactQueryConfig';
 
 const axiosClient = axios.create({
@@ -19,3 +20,20 @@ export const getAllGames = getReactQueryConfig(
   },
   GetAllGamesKey
 );
+
+export const GetGameKey = 'getGame';
+export const getGame = getReactQueryConfig(
+  (gameId: string) => async () => {
+    const response = await axiosClient.get<GameReadDto>(`/v1/games/${gameId}`);
+    return response.data;
+  },
+  GetGameKey
+);
+
+export const startMatch = async (dto: MatchWriteDto) => {
+  const response = await axiosClient.post<RoundResponseDto>(
+    `/v1/matches/start`,
+    dto
+  );
+  return response.data;
+};

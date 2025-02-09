@@ -16,10 +16,10 @@ public class MatchesController : ControllerBase
     }
 
     [HttpPost("start")]
-    public async Task<ActionResult<RoundResponse>> Start(MatchWriteDto dto) =>
+    public async Task<ActionResult<RoundResponseDto>> Start(MatchWriteDto dto) =>
         await _matchService.StartMatch(dto);
 
     [HttpPost("round-score")]
-    public async Task<ActionResult<RoundResponse>> RoundScore(RoundAnswer roundAnswer) =>
+    public async Task<ActionResult<RoundResponseDto>> RoundScore(RoundAnswerDto roundAnswer) =>
         await _matchService.CheckMatchPrompt(roundAnswer);
 }

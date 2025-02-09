@@ -5,9 +5,9 @@ namespace FizzBuzzFlex.Api.Services;
 
 public interface IMatchService
 {
-    Task<RoundResponse> StartMatch(MatchWriteDto matchWriteDto);
+    Task<RoundResponseDto> StartMatch(MatchWriteDto matchWriteDto);
 
-    Task<RoundResponse> CheckMatchPrompt(RoundAnswer roundAnswer);
+    Task<RoundResponseDto> CheckMatchPrompt(RoundAnswerDto roundAnswer);
 
-    Task<RoundResponse> GetMatchPrompt(Match match, bool previousRoundResult);
+    Task<RoundResponseDto> GetMatchPrompt(Match match, bool previousRoundResult);
 }

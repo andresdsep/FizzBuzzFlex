@@ -1,6 +1,6 @@
 namespace FizzBuzzFlex.Api.Dtos;
 
-public class RoundResponse
+public class RoundResponseDto
 {
     public int RoundNumber { get; set; }
 

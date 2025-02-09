@@ -17,3 +17,17 @@ export interface GameMinimalDto {
   author: string;
   createdDate: Date;
 }
+
+export interface GameReadDto {
+  id: string;
+  name: string;
+  author: string;
+  createdDate: Date;
+  divisorLabels: DivisorLabelReadDto[];
+}
+
+export interface DivisorLabelReadDto {
+  id: string;
+  divisor: number;
+  label: string;
+}

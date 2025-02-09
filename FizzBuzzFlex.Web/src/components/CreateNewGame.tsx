@@ -1,7 +1,7 @@
 import { FormEvent, Fragment, useState } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
 import { v4 as uuid } from 'uuid';
-import { GameWriteDto } from '../models/dtos';
+import { GameWriteDto } from '../models/gameDtos';
 import { createNewGame, GetAllGamesKey } from '../utils/apiHelpers';
 import TextField from './TextField';
 
@@ -53,6 +53,7 @@ const CreateNewGame = () => {
               label={`Divisor ${i + 1}`}
               model={gameModel}
               setModel={setGameModel}
+              type="number"
             />
             <TextField
               name={`divisorLabels[${i}].label`}
