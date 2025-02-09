@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using FizzBuzzFlex.Api.Dtos;
 using FizzBuzzFlex.Api.Services;
 using FizzBuzzFlex.EF.Context;
 using FizzBuzzFlex.EF.Entities;
@@ -18,23 +19,24 @@ public class MatchServiceTests
     }
 
     [Fact]
-    public async Task ShouldCreateFirstPromptForMatch()
+    public async Task ShouldStartMatchWithFirstPrompt()
     {
-        var match = await SetUpGameAndMatch();
+        await SetUpGame();
 
-        var prompt = await _service.GetMatchPrompt(match, false);
+        var dto = new MatchWriteDto { Id = Guid.NewGuid() };
+        var prompt = await _service.StartMatch(dto);
         Assert.NotNull(prompt);
 
         var matchInContext = await _context.Matches.Include(m => m.Prompts)
-            .FirstOrDefaultAsync(m => m.Id == match.Id);
+            .FirstOrDefaultAsync(m => m.Id == dto.Id);
         Assert.NotNull(matchInContext);
         Assert.Single(matchInContext.Prompts);
     }
 
     [Fact]
-    public async Task ShouldCreateFollowUpPromptForMatch()
+    public async Task ShouldCreateFollowUpPrompt()
     {
-        var match = await SetUpGameAndMatch(1);
+        var match = await SetUpGameAndMatch([1]);
 
         var prompt = await _service.GetMatchPrompt(match, true);
         Assert.NotNull(prompt);
@@ -46,9 +48,9 @@ public class MatchServiceTests
     }
 
     [Fact]
-    public async Task ShouldNotReturnDuplicateNumbersForMatch()
+    public async Task ShouldNotReturnDuplicateNumbers()
     {
-        var match = await SetUpGameAndMatch(3, 1, 4);
+        var match = await SetUpGameAndMatch([1, 2, 3], 1, 4);
 
         var prompt = await _service.GetMatchPrompt(match, true);
         Assert.NotNull(prompt);
@@ -62,13 +64,90 @@ public class MatchServiceTests
         Assert.Equal(4, promptNumbers.Last());
     }
 
-    private async Task<Match> SetUpGameAndMatch(int numberOfPrompts = 0, int minimumNumber = 1, int maximumNumber = 100)
+    [Fact]
+    public async Task ShouldCheckFizzBuzzAnswer()
+    {
+        var match = await SetUpGameAndMatch([15]);
+        var roundAnswer = new RoundAnswer
+        {
+            MatchId = match.Id,
+            PromptId = match.Prompts.First().Id,
+            Answer = "FizzBuzz",
+        };
+
+        var roundResponse = await _service.CheckMatchPrompt(roundAnswer);
+        Assert.True(roundResponse.PreviousRoundResult);
+    }
+
+    [Fact]
+    public async Task ShouldCheckBuzzAnswer()
+    {
+        var match = await SetUpGameAndMatch([20]);
+        var roundAnswer = new RoundAnswer
+        {
+            MatchId = match.Id,
+            PromptId = match.Prompts.First().Id,
+            Answer = "Buzz",
+        };
+
+        var roundResponse = await _service.CheckMatchPrompt(roundAnswer);
+        Assert.True(roundResponse.PreviousRoundResult);
+    }
+
+    [Fact]
+    public async Task ShouldCheckNumberAnswer()
+    {
+        var match = await SetUpGameAndMatch([22]);
+        var roundAnswer = new RoundAnswer
+        {
+            MatchId = match.Id,
+            PromptId = match.Prompts.First().Id,
+            Answer = "22",
+        };
+
+        var roundResponse = await _service.CheckMatchPrompt(roundAnswer);
+        Assert.True(roundResponse.PreviousRoundResult);
+    }
+
+    [Fact]
+    public async Task ShouldFailWrongAnswer()
+    {
+        var match = await SetUpGameAndMatch([25]);
+        var roundAnswer = new RoundAnswer
+        {
+            MatchId = match.Id,
+            PromptId = match.Prompts.First().Id,
+            Answer = "Fizz",
+        };
+
+        var roundResponse = await _service.CheckMatchPrompt(roundAnswer);
+        Assert.False(roundResponse.PreviousRoundResult);
+    }
+
+    private async Task SetUpGame()
     {
         var game = new Game
         {
             Id = Guid.NewGuid(),
             Name = "FizzBuzz",
             Author = "Andres",
+        };
+        _context.Games.Add(game);
+        await _context.SaveChangesAsync();
+    }
+
+    private async Task<Match> SetUpGameAndMatch(List<int>? promptNumbers = null, int minimumNumber = 1, int maximumNumber = 100)
+    {
+        var game = new Game
+        {
+            Id = Guid.NewGuid(),
+            Name = "FizzBuzz",
+            Author = "Andres",
+            DivisorLabels =
+            [
+                new() { Id = Guid.NewGuid(), Divisor = 3, Label = "Fizz" },
+                new() { Id = Guid.NewGuid(), Divisor = 5, Label = "Buzz" },
+            ],
         };
         var match = new Match
         {
@@ -79,13 +158,13 @@ public class MatchServiceTests
             MaximumNumber = maximumNumber,
         };
 
-        for (int i = 1; i <= numberOfPrompts; i++)
+        foreach (var number in promptNumbers ?? [])
         {
             var prompt = new Prompt
             {
                 Id = Guid.NewGuid(),
                 MatchId = match.Id,
-                Number = i,
+                Number = number,
                 IsCorrect = true,
             };
             match.Prompts.Add(prompt);

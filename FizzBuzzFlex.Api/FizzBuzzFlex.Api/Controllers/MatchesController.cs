@@ -1,7 +1,5 @@
 using FizzBuzzFlex.Api.Dtos;
-using FizzBuzzFlex.Api.Projections;
 using FizzBuzzFlex.Api.Services;
-using FizzBuzzFlex.EF.Context;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FizzBuzzFlex.Api.Controllers;
@@ -10,23 +8,18 @@ namespace FizzBuzzFlex.Api.Controllers;
 [Route("v1/[controller]")]
 public class MatchesController : ControllerBase
 {
-    private readonly DatabaseContext _context;
     private readonly IMatchService _matchService;
 
-    public MatchesController(DatabaseContext context, IMatchService matchService)
+    public MatchesController(IMatchService matchService)
     {
-        _context = context;
         _matchService = matchService;
     }
 
     [HttpPost("start")]
-    public async Task<ActionResult<RoundResponse>> StartForGame(MatchWriteDto dto)
-    {
-        var newMatch = dto.ToEntity();
-        await _context.Matches.AddAsync(newMatch);
-        await _context.SaveChangesAsync();
+    public async Task<ActionResult<RoundResponse>> Start(MatchWriteDto dto) =>
+        await _matchService.StartMatch(dto);
 
-        var prompt = await _matchService.GetMatchPrompt(newMatch, false);
-        return prompt;
-    }
+    [HttpPost("round-score")]
+    public async Task<ActionResult<RoundResponse>> RoundScore(RoundAnswer roundAnswer) =>
+        await _matchService.CheckMatchPrompt(roundAnswer);
 }

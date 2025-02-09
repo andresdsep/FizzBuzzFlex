@@ -1,6 +1,8 @@
 using FizzBuzzFlex.Api.Dtos;
+using FizzBuzzFlex.Api.Projections;
 using FizzBuzzFlex.EF.Context;
 using FizzBuzzFlex.EF.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace FizzBuzzFlex.Api.Services;
 
@@ -11,6 +13,45 @@ public class MatchService : IMatchService
     public MatchService(DatabaseContext context)
     {
         _context = context;
+    }
+
+    public async Task<RoundResponse> StartMatch(MatchWriteDto matchWriteDto)
+    {
+        var newMatch = matchWriteDto.ToEntity();
+        await _context.Matches.AddAsync(newMatch);
+        await _context.SaveChangesAsync();
+
+        return await GetMatchPrompt(newMatch, false);
+    }
+
+    public async Task<RoundResponse> CheckMatchPrompt(RoundAnswer roundAnswer)
+    {
+        var match = await _context.Matches
+            .AsSplitQuery()
+            .Include(m => m.Prompts)
+            .Include(m => m.Game)
+            .ThenInclude(g => g.DivisorLabels)
+            .SingleOrDefaultAsync(m => m.Id == roundAnswer.MatchId);
+        if (match is null)
+            throw new ArgumentException("matchId didn't match a match");
+
+        var prompt = match.Prompts.SingleOrDefault(p => p.Id == roundAnswer.PromptId);
+        if (prompt is null)
+            throw new ArgumentException("promptId didn't match a prompt");
+
+        var correctAnswer = string.Empty;
+        foreach (var divisorLabel in match.Game.DivisorLabels)
+        {
+            var isDivisible = (prompt.Number % divisorLabel.Divisor) == 0;
+            if (isDivisible)
+                correctAnswer += divisorLabel.Label;
+        }
+
+        if (correctAnswer == string.Empty)
+            correctAnswer = prompt.Number.ToString();
+
+        var isCorrect = correctAnswer == roundAnswer.Answer;
+        return await GetMatchPrompt(match, isCorrect);
     }
 
     public async Task<RoundResponse> GetMatchPrompt(Match match, bool previousRoundResult)
@@ -36,7 +77,8 @@ public class MatchService : IMatchService
         {
             RoundNumber = match.Prompts.Count,
             PreviousRoundResult = previousRoundResult,
-            Prompt = attemptedNumber,
+            PromptId = newPrompt.Id,
+            PromptNumber = attemptedNumber,
         };
     }
 }

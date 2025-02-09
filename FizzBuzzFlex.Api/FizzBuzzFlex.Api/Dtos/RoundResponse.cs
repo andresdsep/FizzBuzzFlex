@@ -6,5 +6,7 @@ public class RoundResponse
 
     public bool PreviousRoundResult { get; set; }
 
-    public int Prompt { get; set; }
+    public Guid PromptId { get; set; }
+
+    public int PromptNumber { get; set; }
 }
