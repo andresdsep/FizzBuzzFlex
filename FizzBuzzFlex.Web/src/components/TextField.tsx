@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { produce } from 'immer';
+import { InputHTMLAttributes } from 'react';
 
 function setNestedProperty(obj: any, path: string, value: any) {
   const keys = path.split(/[\\.\\[\]\\'\\"]/).filter((key) => key);
@@ -11,13 +12,13 @@ function setNestedProperty(obj: any, path: string, value: any) {
   }, obj);
 }
 
-interface Props<T> {
+type Props<T> = Pick<InputHTMLAttributes<any>, 'autoFocus' | 'autoComplete'> & {
   name: string;
   label: string;
   model: T;
   setModel: (value: React.SetStateAction<T>) => void;
   type?: 'text' | 'number';
-}
+};
 
 function TextField<T extends object>({
   name,
@@ -25,6 +26,7 @@ function TextField<T extends object>({
   model,
   setModel,
   type = 'text',
+  ...rest
 }: Props<T>) {
   return (
     <div>
@@ -44,6 +46,7 @@ function TextField<T extends object>({
           });
           setModel(newModel);
         }}
+        {...rest}
       />
     </div>
   );

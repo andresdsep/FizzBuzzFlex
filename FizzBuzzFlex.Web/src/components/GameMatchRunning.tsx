@@ -62,6 +62,8 @@ const GameMatchRunning = ({ matchSettings, onMatchEnded }: Props) => {
           label="Answer"
           model={answerModel}
           setModel={setAnswerModel}
+          autoFocus
+          autoComplete="off"
         />
         <button>Submit</button>
       </form>
