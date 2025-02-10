@@ -1,7 +1,8 @@
 import { FormEvent, useState } from 'react';
 import { useMutation } from 'react-query';
 import { v4 as uuid } from 'uuid';
-import { MatchWriteDto, RoundResponseDto } from '../models/matchDtos';
+import { MatchSettings } from '../models/helperTypes';
+import { MatchWriteDto } from '../models/matchDtos';
 import { startMatch } from '../utils/apiHelpers';
 import TextField from './TextField';
 
@@ -14,14 +15,19 @@ const getInitialModel = (): Omit<MatchWriteDto, 'gameId'> => ({
 
 interface Props {
   gameId: string;
-  onMatchStarted: (roundResponse: RoundResponseDto) => void;
+  onMatchStarted: (matchSettings: MatchSettings) => void;
 }
 
 const MatchParametersForm = ({ gameId, onMatchStarted }: Props) => {
   const [matchModel, setMatchModel] = useState(getInitialModel);
 
   const { mutate, isLoading } = useMutation(startMatch, {
-    onSuccess: (data) => onMatchStarted(data),
+    onSuccess: (data) =>
+      onMatchStarted({
+        ...data,
+        matchId: matchModel.id,
+        durationInSeconds: matchModel.durationInSeconds,
+      }),
   });
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();

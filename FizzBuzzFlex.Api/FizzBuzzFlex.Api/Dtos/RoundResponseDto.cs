@@ -6,8 +6,6 @@ public class RoundResponseDto
 
     public bool? PreviousRoundResult { get; set; }
 
-    public Guid MatchId { get; set; }
-
     public Guid PromptId { get; set; }
 
     public int PromptNumber { get; set; }

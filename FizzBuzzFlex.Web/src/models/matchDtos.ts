@@ -9,7 +9,6 @@ export interface MatchWriteDto {
 export interface RoundResponseDto {
   roundNumber: number;
   previousRoundResult: boolean | undefined;
-  matchId: string;
   promptId: string;
   promptNumber: number;
 }

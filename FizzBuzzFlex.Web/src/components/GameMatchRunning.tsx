@@ -1,26 +1,35 @@
 import { FormEvent, useState } from 'react';
 import { useMutation } from 'react-query';
+import { MatchSettings } from '../models/helperTypes';
 import { RoundAnswerDto, RoundResponseDto } from '../models/matchDtos';
 import { playRound } from '../utils/apiHelpers';
+import useCountDown from '../utils/useCountDown';
 import TextField from './TextField';
 
 interface Props {
-  initialRound: RoundResponseDto;
+  matchSettings: MatchSettings;
 }
 
-const GameMatchRunning = ({ initialRound }: Props) => {
-  const [currentRound, setCurrentRound] = useState(initialRound);
+const GameMatchRunning = ({ matchSettings }: Props) => {
+  const [currentRound, setCurrentRound] = useState<RoundResponseDto>({
+    roundNumber: matchSettings.roundNumber,
+    promptId: matchSettings.promptId,
+    promptNumber: matchSettings.promptNumber,
+    previousRoundResult: undefined,
+  });
   const [answerModel, setAnswerModel] = useState<RoundAnswerDto>({
-    matchId: currentRound.matchId,
+    matchId: matchSettings.matchId,
     promptId: currentRound.promptId,
     answer: '',
   });
+
+  const { time } = useCountDown(matchSettings.durationInSeconds, () => {});
 
   const { mutate, isLoading } = useMutation(playRound, {
     onSuccess: (data) => {
       setCurrentRound(data);
       setAnswerModel({
-        matchId: data.matchId,
+        matchId: matchSettings.matchId,
         promptId: data.promptId,
         answer: '',
       });
@@ -36,13 +45,13 @@ const GameMatchRunning = ({ initialRound }: Props) => {
     <h2>Checking answer...</h2>
   ) : (
     <div>
-      {currentRound.previousRoundResult !== null && (
+      {currentRound.previousRoundResult !== undefined && (
         <p>
           Your previous answer was{' '}
           {currentRound.previousRoundResult ? 'correct' : 'incorrect'}!
         </p>
       )}
-      <h3>Round {currentRound.roundNumber}</h3>
+      <h2>Round {currentRound.roundNumber}</h2>
       <h1>{currentRound.promptNumber}</h1>
       <form onSubmit={handleSubmit}>
         <TextField
@@ -51,7 +60,9 @@ const GameMatchRunning = ({ initialRound }: Props) => {
           model={answerModel}
           setModel={setAnswerModel}
         />
+        <button>Submit</button>
       </form>
+      <h3>{time} seconds remaining</h3>
     </div>
   );
 };

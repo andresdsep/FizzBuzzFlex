@@ -1,10 +1,10 @@
 import { GameReadDto } from '../models/gameDtos';
-import { RoundResponseDto } from '../models/matchDtos';
+import { MatchSettings } from '../models/helperTypes';
 import MatchParametersForm from './MatchParametersForm';
 
 interface Props {
   game: GameReadDto;
-  onMatchStarted: (roundResponse: RoundResponseDto) => void;
+  onMatchStarted: (matchSettings: MatchSettings) => void;
 }
 
 const GameIntroduction = ({ game, onMatchStarted }: Props) => (

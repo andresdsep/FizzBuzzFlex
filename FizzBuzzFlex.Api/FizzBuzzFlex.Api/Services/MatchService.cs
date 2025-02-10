@@ -77,7 +77,6 @@ public class MatchService : IMatchService
         {
             RoundNumber = match.Prompts.Count,
             PreviousRoundResult = previousRoundResult,
-            MatchId = match.Id,
             PromptId = newPrompt.Id,
             PromptNumber = attemptedNumber,
         };
