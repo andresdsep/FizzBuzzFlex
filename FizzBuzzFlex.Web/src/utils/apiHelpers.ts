@@ -1,6 +1,10 @@
 import axios from 'axios';
 import { GameMinimalDto, GameReadDto, GameWriteDto } from '../models/gameDtos';
-import { MatchWriteDto, RoundResponseDto } from '../models/matchDtos';
+import {
+  MatchWriteDto,
+  RoundAnswerDto,
+  RoundResponseDto,
+} from '../models/matchDtos';
 import { getReactQueryConfig } from './getReactQueryConfig';
 
 const axiosClient = axios.create({
@@ -34,6 +38,14 @@ export const startMatch = async (dto: MatchWriteDto) => {
   const response = await axiosClient.post<RoundResponseDto>(
     `/v1/matches/start`,
     dto
+  );
+  return response.data;
+};
+
+export const playRound = async (roundAnswer: RoundAnswerDto) => {
+  const response = await axiosClient.post<RoundResponseDto>(
+    `/v1/matches/play-round`,
+    roundAnswer
   );
   return response.data;
 };

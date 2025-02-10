@@ -9,5 +9,5 @@ public interface IMatchService
 
     Task<RoundResponseDto> CheckMatchPrompt(RoundAnswerDto roundAnswer);
 
-    Task<RoundResponseDto> GetMatchPrompt(Match match, bool previousRoundResult);
+    Task<RoundResponseDto> GetMatchPrompt(Match match, bool? previousRoundResult);
 }

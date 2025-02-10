@@ -21,7 +21,7 @@ public class MatchService : IMatchService
         await _context.Matches.AddAsync(newMatch);
         await _context.SaveChangesAsync();
 
-        return await GetMatchPrompt(newMatch, false);
+        return await GetMatchPrompt(newMatch, null);
     }
 
     public async Task<RoundResponseDto> CheckMatchPrompt(RoundAnswerDto roundAnswer)
@@ -54,7 +54,7 @@ public class MatchService : IMatchService
         return await GetMatchPrompt(match, isCorrect);
     }
 
-    public async Task<RoundResponseDto> GetMatchPrompt(Match match, bool previousRoundResult)
+    public async Task<RoundResponseDto> GetMatchPrompt(Match match, bool? previousRoundResult)
     {
         var usedNumbers = match.Prompts.Select(p => p.Number).ToList();
 
@@ -77,6 +77,7 @@ public class MatchService : IMatchService
         {
             RoundNumber = match.Prompts.Count,
             PreviousRoundResult = previousRoundResult,
+            MatchId = match.Id,
             PromptId = newPrompt.Id,
             PromptNumber = attemptedNumber,
         };

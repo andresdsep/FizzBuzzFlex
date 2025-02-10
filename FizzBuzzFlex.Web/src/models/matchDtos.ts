@@ -8,7 +8,14 @@ export interface MatchWriteDto {
 
 export interface RoundResponseDto {
   roundNumber: number;
-  previousRoundResult: boolean;
+  previousRoundResult: boolean | undefined;
+  matchId: string;
   promptId: string;
   promptNumber: number;
+}
+
+export interface RoundAnswerDto {
+  matchId: string;
+  promptId: string;
+  answer: string;
 }
