@@ -22,4 +22,8 @@ public class MatchesController : ControllerBase
     [HttpPost("play-round")]
     public async Task<ActionResult<RoundResponseDto>> PlayRound(RoundAnswerDto roundAnswer) =>
         await _matchService.CheckMatchPrompt(roundAnswer);
+
+    [HttpGet("{matchId:guid}/results")]
+    public async Task<ActionResult<MatchResultsDto>> GetResults(Guid matchId) =>
+        await _matchService.GetMatchResults(matchId);
 }

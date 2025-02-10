@@ -8,9 +8,10 @@ import TextField from './TextField';
 
 interface Props {
   matchSettings: MatchSettings;
+  onMatchEnded: (matchId: string) => void;
 }
 
-const GameMatchRunning = ({ matchSettings }: Props) => {
+const GameMatchRunning = ({ matchSettings, onMatchEnded }: Props) => {
   const [currentRound, setCurrentRound] = useState<RoundResponseDto>({
     roundNumber: matchSettings.roundNumber,
     promptId: matchSettings.promptId,
@@ -23,7 +24,9 @@ const GameMatchRunning = ({ matchSettings }: Props) => {
     answer: '',
   });
 
-  const { time } = useCountDown(matchSettings.durationInSeconds, () => {});
+  const { time } = useCountDown(matchSettings.durationInSeconds, () =>
+    onMatchEnded(matchSettings.matchId)
+  );
 
   const { mutate, isLoading } = useMutation(playRound, {
     onSuccess: (data) => {

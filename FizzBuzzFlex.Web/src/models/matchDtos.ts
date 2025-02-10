@@ -18,3 +18,8 @@ export interface RoundAnswerDto {
   promptId: string;
   answer: string;
 }
+
+export interface MatchResultsDto {
+  correctAnswers: number;
+  incorrectAnswers: number;
+}

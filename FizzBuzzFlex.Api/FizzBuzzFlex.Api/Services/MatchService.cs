@@ -51,6 +51,8 @@ public class MatchService : IMatchService
             correctAnswer = prompt.Number.ToString();
 
         var isCorrect = string.Equals(correctAnswer, roundAnswer.Answer, StringComparison.OrdinalIgnoreCase);
+        prompt.IsCorrect = isCorrect;
+
         return await GetMatchPrompt(match, isCorrect);
     }
 
@@ -79,6 +81,21 @@ public class MatchService : IMatchService
             PreviousRoundResult = previousRoundResult,
             PromptId = newPrompt.Id,
             PromptNumber = attemptedNumber,
+        };
+    }
+
+    public async Task<MatchResultsDto> GetMatchResults(Guid matchId)
+    {
+        var match = await _context.Matches
+            .Include(m => m.Prompts)
+            .SingleOrDefaultAsync(m => m.Id == matchId);
+        if (match is null)
+            throw new ArgumentException("matchId didn't match a match");
+
+        return new MatchResultsDto
+        {
+            CorrectAnswers = match.Prompts.Count(p => p.IsCorrect == true),
+            IncorrectAnswers = match.Prompts.Count(p => p.IsCorrect == false),
         };
     }
 }

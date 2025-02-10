@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { GameMinimalDto, GameReadDto, GameWriteDto } from '../models/gameDtos';
 import {
+  MatchResultsDto,
   MatchWriteDto,
   RoundAnswerDto,
   RoundResponseDto,
@@ -49,3 +50,15 @@ export const playRound = async (roundAnswer: RoundAnswerDto) => {
   );
   return response.data;
 };
+
+export const GetMatchResultsKey = 'getMatchResults';
+export const getMatchResults = getReactQueryConfig(
+  (matchId: string) => async () => {
+    const response = await axiosClient.get<MatchResultsDto>(
+      `/v1/matches/${matchId}/results`
+    );
+    return response.data;
+  },
+  GetMatchResultsKey,
+  { staleTime: Infinity }
+);

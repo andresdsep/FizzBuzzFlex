@@ -77,6 +77,12 @@ public class MatchServiceTests
 
         var roundResponse = await _service.CheckMatchPrompt(roundAnswer);
         Assert.True(roundResponse.PreviousRoundResult);
+
+        var matchInContext = await _context.Matches.Include(m => m.Prompts)
+            .FirstOrDefaultAsync(m => m.Id == match.Id);
+        Assert.NotNull(matchInContext);
+        var promptInMatch = matchInContext.Prompts.First();
+        Assert.True(promptInMatch.IsCorrect);
     }
 
     [Fact]
@@ -92,6 +98,12 @@ public class MatchServiceTests
 
         var roundResponse = await _service.CheckMatchPrompt(roundAnswer);
         Assert.True(roundResponse.PreviousRoundResult);
+
+        var matchInContext = await _context.Matches.Include(m => m.Prompts)
+            .FirstOrDefaultAsync(m => m.Id == match.Id);
+        Assert.NotNull(matchInContext);
+        var promptInMatch = matchInContext.Prompts.First();
+        Assert.True(promptInMatch.IsCorrect);
     }
 
     [Fact]
@@ -107,6 +119,12 @@ public class MatchServiceTests
 
         var roundResponse = await _service.CheckMatchPrompt(roundAnswer);
         Assert.True(roundResponse.PreviousRoundResult);
+
+        var matchInContext = await _context.Matches.Include(m => m.Prompts)
+            .FirstOrDefaultAsync(m => m.Id == match.Id);
+        Assert.NotNull(matchInContext);
+        var promptInMatch = matchInContext.Prompts.First();
+        Assert.True(promptInMatch.IsCorrect);
     }
 
     [Fact]
@@ -122,6 +140,12 @@ public class MatchServiceTests
 
         var roundResponse = await _service.CheckMatchPrompt(roundAnswer);
         Assert.False(roundResponse.PreviousRoundResult);
+
+        var matchInContext = await _context.Matches.Include(m => m.Prompts)
+            .FirstOrDefaultAsync(m => m.Id == match.Id);
+        Assert.NotNull(matchInContext);
+        var promptInMatch = matchInContext.Prompts.First();
+        Assert.False(promptInMatch.IsCorrect);
     }
 
     private async Task SetUpGame()
