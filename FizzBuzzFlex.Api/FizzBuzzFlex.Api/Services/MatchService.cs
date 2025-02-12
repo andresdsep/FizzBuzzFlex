@@ -39,21 +39,30 @@ public class MatchService : IMatchService
         if (prompt is null)
             throw new ArgumentException("promptId didn't match a prompt");
 
-        var correctAnswer = string.Empty;
-        foreach (var divisorLabel in match.Game.DivisorLabels)
-        {
-            var isDivisible = (prompt.Number % divisorLabel.Divisor) == 0;
-            if (isDivisible)
-                correctAnswer += divisorLabel.Label;
-        }
-
-        if (correctAnswer == string.Empty)
-            correctAnswer = prompt.Number.ToString();
-
-        var isCorrect = string.Equals(correctAnswer, roundAnswer.Answer, StringComparison.OrdinalIgnoreCase);
+        bool isCorrect = CheckAnswer(roundAnswer, prompt.Number, match.Game.DivisorLabels);
         prompt.IsCorrect = isCorrect;
 
         return await GetMatchPrompt(match, isCorrect);
+    }
+
+    private static bool CheckAnswer(RoundAnswerDto roundAnswer, int promptNumber, List<DivisorLabel> divisorLabels)
+    {
+        var hasDivisor = false;
+        foreach (var divisorLabel in divisorLabels)
+        {
+            var isDivisible = (promptNumber % divisorLabel.Divisor) == 0;
+            if (isDivisible)
+            {
+                if (!roundAnswer.Answer.Contains(divisorLabel.Label, StringComparison.InvariantCultureIgnoreCase))
+                    return false;
+                hasDivisor = true;
+            }
+            else
+                if (roundAnswer.Answer.Contains(divisorLabel.Label, StringComparison.InvariantCultureIgnoreCase))
+                    return false;
+        }
+
+        return hasDivisor || roundAnswer.Answer.Contains(promptNumber.ToString());
     }
 
     public async Task<RoundResponseDto> GetMatchPrompt(Match match, bool? previousRoundResult)

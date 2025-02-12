@@ -63,88 +63,34 @@ public class MatchServiceTests
         Assert.Equal(4, promptNumbers.Last());
     }
 
-    [Fact]
-    public async Task ShouldCheckFizzBuzzAnswer()
+    [Theory]
+    [InlineData(15, "FizzBuzz", true)]
+    [InlineData(15, "fizzbuzz", true)]
+    [InlineData(15, "Fizz Buzz", true)]
+    [InlineData(15, "BuzzFizz", true)]
+    [InlineData(20, "Buzz", true)]
+    [InlineData(22, "22", true)]
+    [InlineData(25, "Fizz", false)]
+    [InlineData(21, "FizzBuzz", false)]
+    [InlineData(20, "FizzBuzz", false)]
+    public async Task ShouldCheckMatchPrompts(int prompt, string answer, bool expected)
     {
-        var match = await SetUpGameAndMatch([15]);
+        var match = await SetUpGameAndMatch([prompt]);
         var roundAnswer = new RoundAnswerDto
         {
             MatchId = match.Id,
             PromptId = match.Prompts.First().Id,
-            Answer = "FizzBuzz",
+            Answer = answer,
         };
 
         var roundResponse = await _service.CheckMatchPrompt(roundAnswer);
-        Assert.True(roundResponse.PreviousRoundResult);
+        Assert.Equal(expected, roundResponse.PreviousRoundResult);
 
         var matchInContext = await _context.Matches.Include(m => m.Prompts)
             .FirstOrDefaultAsync(m => m.Id == match.Id);
         Assert.NotNull(matchInContext);
         var promptInMatch = matchInContext.Prompts.First();
-        Assert.True(promptInMatch.IsCorrect);
-    }
-
-    [Fact]
-    public async Task ShouldCheckBuzzAnswer()
-    {
-        var match = await SetUpGameAndMatch([20]);
-        var roundAnswer = new RoundAnswerDto
-        {
-            MatchId = match.Id,
-            PromptId = match.Prompts.First().Id,
-            Answer = "Buzz",
-        };
-
-        var roundResponse = await _service.CheckMatchPrompt(roundAnswer);
-        Assert.True(roundResponse.PreviousRoundResult);
-
-        var matchInContext = await _context.Matches.Include(m => m.Prompts)
-            .FirstOrDefaultAsync(m => m.Id == match.Id);
-        Assert.NotNull(matchInContext);
-        var promptInMatch = matchInContext.Prompts.First();
-        Assert.True(promptInMatch.IsCorrect);
-    }
-
-    [Fact]
-    public async Task ShouldCheckNumberAnswer()
-    {
-        var match = await SetUpGameAndMatch([22]);
-        var roundAnswer = new RoundAnswerDto
-        {
-            MatchId = match.Id,
-            PromptId = match.Prompts.First().Id,
-            Answer = "22",
-        };
-
-        var roundResponse = await _service.CheckMatchPrompt(roundAnswer);
-        Assert.True(roundResponse.PreviousRoundResult);
-
-        var matchInContext = await _context.Matches.Include(m => m.Prompts)
-            .FirstOrDefaultAsync(m => m.Id == match.Id);
-        Assert.NotNull(matchInContext);
-        var promptInMatch = matchInContext.Prompts.First();
-        Assert.True(promptInMatch.IsCorrect);
-    }
-
-    [Fact]
-    public async Task ShouldFailWrongAnswer()
-    {
-        var match = await SetUpGameAndMatch([25]);
-        var roundAnswer = new RoundAnswerDto
-        {
-            MatchId = match.Id,
-            PromptId = match.Prompts.First().Id,
-            Answer = "Fizz",
-        };
-
-        var roundResponse = await _service.CheckMatchPrompt(roundAnswer);
-        Assert.False(roundResponse.PreviousRoundResult);
-
-        var matchInContext = await _context.Matches.Include(m => m.Prompts)
-            .FirstOrDefaultAsync(m => m.Id == match.Id);
-        Assert.NotNull(matchInContext);
-        var promptInMatch = matchInContext.Prompts.First();
-        Assert.False(promptInMatch.IsCorrect);
+        Assert.Equal(expected, promptInMatch.IsCorrect);
     }
 
     private async Task SetUpGame()
