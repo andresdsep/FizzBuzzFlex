@@ -45,8 +45,6 @@ The second console should be displaying a localhost link. Ctrl + click it and ha
 
 - Enter player name before starting match
 
-- Prompt checking to be more flexible (don't care about order, spaces)
-
 - Prompt checking to be "optimistic". Don't make player wait for response for previous round.
 
 - Implement form framework in all forms, including validation

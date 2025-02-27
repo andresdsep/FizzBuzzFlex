@@ -1,8 +1,6 @@
 using FizzBuzzFlex.Api.Dtos;
-using FizzBuzzFlex.Api.Projections;
-using FizzBuzzFlex.EF.Context;
+using FizzBuzzFlex.Api.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace FizzBuzzFlex.Api.Controllers;
 
@@ -10,41 +8,37 @@ namespace FizzBuzzFlex.Api.Controllers;
 [Route("v1/[controller]")]
 public class GamesController : ControllerBase
 {
-    private readonly DatabaseContext _context;
+    private readonly IGameService _gameService;
 
-    public GamesController(DatabaseContext context)
+    public GamesController(IGameService gameService)
     {
-        _context = context;
+        _gameService = gameService;
     }
 
     [HttpGet("all")]
     public async Task<ActionResult<IEnumerable<GameMinimalDto>>> GetAll()
     {
-        var games = await _context.Games.ToListAsync();
-        return Ok(games.Select(GameProjections.ToMinimalDto));
+        return Ok(await _gameService.GetAll());
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<GameReadDto>> GetById(Guid id)
     {
-        var game = await _context.Games.Include(g => g.DivisorLabels).FirstOrDefaultAsync(g => g.Id == id);
+        var game = await _gameService.GetById(id);
 
         if (game == null)
         {
             return NotFound();
         }
 
-        return game.ToReadDto();
+        return game;
     }
 
     [HttpPost]
     public async Task<ActionResult<GameReadDto>> Create(GameWriteDto dto)
     {
-        var game = dto.ToEntity();
+        var game = await _gameService.Create(dto);
 
-        _context.Games.Add(game);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetById), new { id = game.Id }, game.ToReadDto());
+        return CreatedAtAction(nameof(GetById), new { id = game.Id }, game);
     }
 }

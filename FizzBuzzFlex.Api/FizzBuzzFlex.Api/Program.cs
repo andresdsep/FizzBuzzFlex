@@ -13,6 +13,7 @@ builder.Services.AddSwaggerGen();
 
 var connectionString = builder.Configuration.GetConnectionString("SqlConnection")!;
 builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddTransient<IGameService, GameService>();
 builder.Services.AddTransient<IMatchService, MatchService>();
 
 var app = builder.Build();
